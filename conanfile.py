@@ -18,18 +18,26 @@ class TBBConan(ConanFile):
         shutil.move("tbb44_20160413oss", "tbb")
      
     def build(self):
-        param = "x86" if self.settings.arch == "x86" else "amd64"
-        vcvars = 'call "%%vs140comntools%%../../VC/vcvarsall.bat" %s' % param
-        self.run("%s && cd tbb && mingw32-make" % vcvars)
+        arch="ia32" if self.settings.arch=="x86" else "intel64"
+        if self.settings.compiler == "Visual Studio":
+            param = "x86" if self.settings.arch == "x86" else "amd64"
+            vcvars = 'call "%%vs%s0comntools%%../../VC/vcvarsall.bat" %s' % (self.settings.compiler.version, param)     
+            self.run("%s && cd tbb && mingw32-make arch=%s" % (vcvars, arch))
+        else:
+           self.run("cd tbb && make arch=%s" % ( arch)) 
 
     def package(self):
         self.copy("*.h", "include", "tbb/include")
-        self.copy("*.lib", "lib", "tbb/build", keep_path=False)
-        self.copy("*.a", "lib", "tbb/build", keep_path=False) 
-        self.copy("*.dll", "bin", "tbb/build", keep_path=False)
-        self.copy("*.dylib", "lib", "tbb/build", keep_path=False)
-        self.copy("*.so", "lib", "tbb/build", keep_path=False)
+        build_folder = "tbb/build/"
+        build_type = "debug" if self.settings.build_type == "Debug" else "release"
+        self.copy("*%s*.lib" % build_type, "lib", build_folder, keep_path=False)
+        self.copy("*%s*.a" % build_type, "lib", build_folder, keep_path=False) 
+        self.copy("*%s*.dll" % build_type, "bin", build_folder, keep_path=False)
+        self.copy("*%s*.dylib" % build_type, "lib", build_folder, keep_path=False)
+        self.copy("*%s*.so" % build_type, "lib", build_folder, keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs.extend(["tbb"])
-                    
+        if self.settings.build_type == "Debug":
+            self.cpp_info.libs.extend(["tbb_debug", "tbbmalloc_debug", "tbbmalloc_proxy_debug"])
+        else:
+            self.cpp_info.libs.extend(["tbb", "tbbmalloc", "tbbmalloc_proxy"])             
