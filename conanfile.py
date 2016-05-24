@@ -33,8 +33,8 @@ class TBBConan(ConanFile):
         self.copy("*%s*.lib" % build_type, "lib", build_folder, keep_path=False)
         self.copy("*%s*.a" % build_type, "lib", build_folder, keep_path=False) 
         self.copy("*%s*.dll" % build_type, "bin", build_folder, keep_path=False)
-        self.copy("*%s*.dylib" % build_type, "bin", build_folder, keep_path=False)
-        self.copy("*%s*.so*" % build_type, "bin", build_folder, keep_path=False)
+        self.copy("*%s*.dylib" % build_type, "lib", build_folder, keep_path=False)
+        self.copy("*%s*.so*" % build_type, "lib", build_folder, keep_path=False)
 
     def package_info(self):
         if self.settings.build_type == "Debug":
