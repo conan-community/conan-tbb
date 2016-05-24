@@ -16,8 +16,12 @@ class TBBTestConan(ConanFile):
 
     def imports(self):
         self.copy("*.dll", "bin", "bin")
-        self.copy("*.dylib", "bin", "lib")
+        self.copy("*.so*", "bin", "bin")
+        self.copy("*.dylib", "bin", "bin")
 
     def test(self):
         os.chdir("bin")
-        self.run(".%sexample" % os.sep)
+        if self.settings.os == "Linux":
+            self.run("LD_LIBRARY_PATH=./ ./example")
+        else:
+            self.run(".%sexample" % os.sep)
