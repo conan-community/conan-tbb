@@ -20,8 +20,7 @@ class TBBConan(ConanFile):
     def build(self):
         arch="ia32" if self.settings.arch=="x86" else "intel64"
         if self.settings.compiler == "Visual Studio":
-            param = "x86" if self.settings.arch == "x86" else "amd64"
-            vcvars = 'call "%%vs%s0comntools%%../../VC/vcvarsall.bat" %s' % (self.settings.compiler.version, param)     
+            vcvars = tools.vcvars_command(self.settings) 
             self.run("%s && cd tbb && mingw32-make arch=%s" % (vcvars, arch))
         else:
            self.run("cd tbb && make arch=%s" % ( arch)) 
