@@ -1,9 +1,8 @@
 # conan-TBB
-Intel TBB computer vision package for conan package manager
+Intel Threaded Building Blocks for conan package manager
 
 The package is still not uploaded, but working in:
-- Only working in Windows, MSVC14. Hardcoded compiler.
-- Requires mingw32-make to be installed and in system path
+- On Windows, requires mingw32-make to be installed and in system path
 
 Steps: 
 
