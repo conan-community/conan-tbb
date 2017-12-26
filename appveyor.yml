@@ -29,5 +29,5 @@ install:
 
 test_script:
   - cinst mingw
-  - set PATH=C:\MinGW\bin;%PATH%
+  - set PATH=C:\MinGW\bin;C:\tools\mingw64\bin;%PATH%
   - python build.py
