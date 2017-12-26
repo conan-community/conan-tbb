@@ -28,4 +28,5 @@ install:
   - conan user # It creates the conan data directory
 
 test_script:
+  - set PATH=C:\MinGW\bin;%PATH%
   - python build.py

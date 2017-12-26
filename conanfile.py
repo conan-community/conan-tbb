@@ -13,7 +13,15 @@ class TBBConan(ConanFile):
     url = "https://github.com/memsharded/conan-tbb.git"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    # TBB by default is a special case, it strongly recommends SHARED
+    default_options = "shared=True"
+
+    def configure(self):
+        if not self.options.shared:
+            if self.settings.os == "Windows":
+                raise Exception("Intel-TBB does not support static linking in Windows")
+            else:
+                self.output.warn("Intel-TBB strongly discourage usage of static linkage")
 
     def source(self):
         tools.download("https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/tbb44_20160413oss_src.tgz", "tbb.zip")
@@ -25,7 +33,7 @@ class TBBConan(ConanFile):
         extra="" if self.options.shared else "extra_inc=big_iron.inc"
         arch="ia32" if self.settings.arch=="x86" else "intel64"
         if self.settings.compiler == "Visual Studio":
-            vcvars = tools.vcvars_command(self.settings) 
+            vcvars = tools.vcvars_command(self.settings)
             self.run("%s && cd tbb && mingw32-make arch=%s %s" % (vcvars, arch, extra))
         else:
             self.run("cd tbb && make arch=%s %s" % (arch, extra)) 
