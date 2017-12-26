@@ -1,12 +1,8 @@
 from conans import ConanFile, CMake
-import os
 
-channel = os.getenv("CONAN_CHANNEL", "testing")
-username = os.getenv("CONAN_USERNAME", "memsharded")
 
 class TBBTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    requires = "TBB/4.4.4@%s/%s" % (username, channel)
     generators = "cmake"
 
     def build(self):
