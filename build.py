@@ -7,7 +7,7 @@ if __name__ == "__main__":
     builder.add_common_builds(shared_option_name="TBB:shared")
     filtered_builds = []
     for settings, options, env_vars, build_requires, reference in builder.items:
-        if platform.system() != "Windows" or options["shared"] != "False":
+        if platform.system() != "Windows" or options["TBB:shared"] != "False":
              filtered_builds.append([settings, options, env_vars, build_requires])
     builder.builds = filtered_builds
     builder.run()
