@@ -34,7 +34,10 @@ class TBBConan(ConanFile):
         arch="ia32" if self.settings.arch=="x86" else "intel64"
         if self.settings.compiler == "Visual Studio":
             vcvars = tools.vcvars_command(self.settings)
-            self.run("%s && cd tbb && mingw32-make arch=%s %s" % (vcvars, arch, extra))
+            if tools.which("mingw32-make"):
+                self.run("%s && cd tbb && mingw32-make arch=%s %s" % (vcvars, arch, extra))
+            else:
+                raise Exception("This package needs mingw32-make in the path to build")
         else:
             self.run("cd tbb && make arch=%s %s" % (arch, extra)) 
 

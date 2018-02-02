@@ -7,7 +7,7 @@ environment:
 
     CONAN_REFERENCE: "TBB/4.4.4"
     CONAN_USERNAME: "conan"
-    CONAN_LOGIN_USERNAME: "memsharded"
+    CONAN_LOGIN_USERNAME: "conanbot"
     CONAN_CHANNEL: "testing"
     VS150COMNTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\"
     CONAN_UPLOAD: "https://api.bintray.com/conan/conan-community/conan"
