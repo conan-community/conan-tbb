@@ -10,7 +10,7 @@ class TBBConan(ConanFile):
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++ programs 
     that take full advantage of multicore performance, that are portable and composable, and that have future-proof scalability
     """
-    url = "https://github.com/memsharded/conan-tbb.git"
+    url = "https://github.com/conan-community/conan-tbb"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     # TBB by default is a special case, it strongly recommends SHARED
