@@ -10,7 +10,7 @@ class TBBConan(ConanFile):
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++ programs 
     that take full advantage of multicore performance, that are portable and composable, and that have future-proof scalability
     """
-    url = "https://github.com/memsharded/conan-tbb.git"
+    url = "https://github.com/conan-community/conan-tbb"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     # TBB by default is a special case, it strongly recommends SHARED
@@ -34,7 +34,10 @@ class TBBConan(ConanFile):
         arch="ia32" if self.settings.arch=="x86" else "intel64"
         if self.settings.compiler == "Visual Studio":
             vcvars = tools.vcvars_command(self.settings)
-            self.run("%s && cd tbb && mingw32-make arch=%s %s" % (vcvars, arch, extra))
+            if tools.which("mingw32-make"):
+                self.run("%s && cd tbb && mingw32-make arch=%s %s" % (vcvars, arch, extra))
+            else:
+                raise Exception("This package needs mingw32-make in the path to build")
         else:
             self.run("cd tbb && make arch=%s %s" % (arch, extra)) 
 
