@@ -24,9 +24,7 @@ class TBBConan(ConanFile):
                 self.output.warn("Intel-TBB strongly discourage usage of static linkage")
 
     def source(self):
-        tools.download("https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/tbb44_20160413oss_src.tgz", "tbb.zip")
-        tools.untargz("tbb.zip")
-        os.unlink("tbb.zip")
+        tools.get("https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/tbb44_20160413oss_src.tgz")
         shutil.move("tbb44_20160413oss", "tbb")
      
     def build(self):
