@@ -47,6 +47,7 @@ class TBBConan(ConanFile):
         self.copy("*%s*.a" % build_type, "lib", build_folder, keep_path=False) 
         self.copy("*%s*.dll" % build_type, "bin", build_folder, keep_path=False)
         self.copy("*%s*.dylib" % build_type, "lib", build_folder, keep_path=False)
+        self.copy("*COPYING")
     
         if self.settings.os == "Linux":
             # leaving the below line in case MacOSX build also produces the same bad libs
