@@ -41,6 +41,7 @@ class TBBConan(ConanFile):
 
     def package(self):
         self.copy("*.h", "include", "tbb/include")
+        self.copy("*", "include/tbb/compat", "tbb/include/tbb/compat")
         build_folder = "tbb/build/"
         build_type = "debug" if self.settings.build_type == "Debug" else "release"
         self.copy("*%s*.lib" % build_type, "lib", build_folder, keep_path=False)
