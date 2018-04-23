@@ -1,27 +1,30 @@
-# conan-TBB
-Intel Threaded Building Blocks for conan package manager
+# conan-tbb
 
-The package is still not uploaded, but working in:
-- On Windows, requires mingw32-make to be installed and in system path
+![conan-tbb image](/images/conan-tbb.png)
 
-Steps: 
+[![Download](https://api.bintray.com/packages/conan-community/conan/tbb%3Aconan/images/download.svg?version=4.4.4%3Astable)](https://bintray.com/conan-community/conan/tbb%3Aconan/4.4.4%3Astable/link)
+[![Build Status](https://travis-ci.org/conan-community/conan-tbb.svg?branch=stable%2F4.4.4)](https://travis-ci.org/conan-community/conan-tbb)
+[![Build status](https://ci.appveyor.com/api/projects/status/jyeh443gn0l0f3bi/branch/stable/4.4.4?svg=true)](https://ci.appveyor.com/project/memsharded/conan-tbb/branch/stable/4.4.4)
 
-```bash
-$ git clone https://github.com/memsharded/conan-tbb.git
-$ cd conan-tbb
-$ conan export memsharded/testing
-$ conan test_package
-```
+[Conan.io](https://conan.io) package for [TBB](https://www.threadingbuildingblocks.org) project.
 
-Conan re-builds the package with ``conan test_package``, if you want to re-run the test only, you can
+The packages generated with this *conanfile.py* can be found in [Bintray](https://bintray.com/conan-community/conan/tbb%3Aconan).
 
-```bash
-$ conan test_package --build=never (--build=missing will also do it)
-```
+## Basic setup
 
+    $ conan install TBB/4.4.4@conan/stable
 
-This is ongoing work:
+## Project setup
 
-- Feel free to add tests to build, specially if something fails, with a PR, so the package is better tested
+If you handle multiple dependencies in your project is better to add a *conanfile.txt*:
 
+    [requires]
+    tbb/4.4.4@conan/stable
 
+    [generators]
+    txt
+    cmake
+
+## License
+
+[MIT License](LICENSE)

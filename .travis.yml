@@ -4,7 +4,9 @@ env:
      - CONAN_USERNAME: "conan"
      - CONAN_LOGIN_USERNAME: "conanbot"
      - CONAN_CHANNEL: "testing"
+     - CONAN_STABLE_BRANCH_PATTERN: "stable/*"
      - CONAN_UPLOAD: "https://api.bintray.com/conan/conan-community/conan"
+     - CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
 
 linux: &linux
    os: linux
