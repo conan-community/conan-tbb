@@ -41,7 +41,7 @@ that have future-proof scalability"""
                 make = "mingw32-make"
             elif tools.os_info.detect_windows_subsystem():
                 make = "make"
-                use_win_bash = False
+                use_win_bash = True
             else:
                 make = "make"
 
