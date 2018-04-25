@@ -57,6 +57,8 @@ that have future-proof scalability"""
                              win_bash=use_win_bash)
                 except Exception:
                     raise Exception("This package needs 'make' in the path to build")
+            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":
+                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra), win_bash=use_win_bash)
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
 
