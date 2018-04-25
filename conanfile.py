@@ -37,12 +37,16 @@ that have future-proof scalability"""
         make = tools.get_env("CONAN_MAKE_PROGRAM")
 
         if not make:
-            if tools.which("mingw32-make"):
-                make = "mingw32-make"
-            elif tools.os_info.detect_windows_subsystem():
-                make = "make"
-                use_win_bash = True
-            else:
+            # FIXME: Remove try/except for Conan 1.3
+            try:
+                if tools.which("mingw32-make"):
+                    make = "mingw32-make"
+                elif tools.os_info.detect_windows_subsystem():
+                    make = "make"
+                    use_win_bash = True
+                else:
+                    make = "make"
+            except Exception:
                 make = "make"
 
         with tools.chdir("tbb"):
