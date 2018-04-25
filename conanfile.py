@@ -57,12 +57,13 @@ that have future-proof scalability"""
                              win_bash=use_win_bash)
                 except Exception:
                     raise Exception("This package needs 'make' in the path to build")
-            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":
+            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra), win_bash=use_win_bash)
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
 
     def package(self):
+        self.copy("*COPYING", dst="licenses", keep_path=False)
         self.copy("*.h", "include", "tbb/include")
         self.copy("*", "include/tbb/compat", "tbb/include/tbb/compat")
         build_folder = "tbb/build/"
@@ -71,7 +72,9 @@ that have future-proof scalability"""
         self.copy("*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False)
         self.copy("*%s*.dll" % build_type, dst="bin", src=build_folder, keep_path=False)
         self.copy("*%s*.dylib" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy("*COPYING", dst="licenses", keep_path=False)
+        # Copy also .dlls to lib folder so consumers can link against them directly when using MinGW
+        if self.settings.os == "Windows" and self.settings.compiler == "gcc":
+            self.copy("*%s*.dll" % build_type, dst="lib", src=build_folder, keep_path=False)
 
         if self.settings.os == "Linux":
             # leaving the below line in case MacOSX build also produces the same bad libs
