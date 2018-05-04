@@ -25,8 +25,8 @@ that have future-proof scalability"""
                 self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
     def source(self):
-        tools.get("https://www.threadingbuildingblocks.org/sites/default/files"
-                  "/software_releases/source/tbb44_20160413oss_src.tgz")
+        tools.get("https://www.threadingbuildingblocks.org/sites/default/filessoftware_releases/"
+                  "source/tbb44_20160413oss_src.tgz")
         shutil.move("tbb44_20160413oss", "tbb")
 
     def build(self):
@@ -37,16 +37,12 @@ that have future-proof scalability"""
         make = tools.get_env("CONAN_MAKE_PROGRAM")
 
         if not make:
-            # FIXME: Remove try/except for Conan 1.3
-            try:
-                if tools.which("mingw32-make"):
-                    make = "mingw32-make"
-                elif tools.os_info.detect_windows_subsystem():
-                    make = "make"
-                    use_win_bash = True
-                else:
-                    make = "make"
-            except Exception:
+            if tools.which("mingw32-make"):
+                make = "mingw32-make"
+            elif tools.os_info.detect_windows_subsystem():
+                make = "make"
+                use_win_bash = True
+            else:
                 make = "make"
 
         with tools.chdir("tbb"):

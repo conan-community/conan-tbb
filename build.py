@@ -1,5 +1,5 @@
-from conan.packager import ConanMultiPackager
 import platform
+from conan.packager import ConanMultiPackager
 
 
 if __name__ == "__main__":
@@ -8,6 +8,6 @@ if __name__ == "__main__":
     filtered_builds = []
     for settings, options, env_vars, build_requires, reference in builder.items:
         if platform.system() != "Windows" or options["TBB:shared"]:
-             filtered_builds.append([settings, options, env_vars, build_requires])
+            filtered_builds.append([settings, options, env_vars, build_requires])
     builder.builds = filtered_builds
     builder.run()
