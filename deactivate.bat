@@ -1,7 +1,0 @@
-@echo off
-SET MINGW_HOME=
-SET CONAN_CMAKE_GENERATOR=
-SET CXX=
-SET CC=
-SET PATH=C:\cmder\bin;C:\cmder\vendor\git-for-windows\cmd;C:\cmder\vendor\conemu-maximus5\ConEmu\Scripts;C:\cmder\vendor\conemu-maximus5;C:\cmder\vendor\conemu-maximus5\ConEmu;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\Docker\Docker\Resources\bin;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Python36\Scripts\;C:\Program Files\Python36\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\CMake\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\dotnet\;C:\Program Files\JetBrains\PyCharm Community Edition 2018.1.1\bin\;C:\Ruby25-x64\bin;C:\Users\danimtb\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Users\danimtb\;;C:\cmder\vendor\git-for-windows\usr\bin;C:\cmder\vendor\git-for-windows\usr\share\vim\vim74;C:\cmder\
-SET PROMPT=CLINK $P$G
