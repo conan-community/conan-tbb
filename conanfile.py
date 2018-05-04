@@ -33,28 +33,20 @@ that have future-proof scalability"""
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
-        use_win_bash = False
-        make = tools.get_env("CONAN_MAKE_PROGRAM")
+        make = tools.get_env("CONAN_MAKE_PROGRAM", "make")
 
-        if not make:
-            if tools.which("mingw32-make"):
-                make = "mingw32-make"
-            elif tools.os_info.detect_windows_subsystem():
-                make = "make"
-                use_win_bash = True
-            else:
-                make = "make"
+        if tools.which("mingw32-make"):
+            make = "mingw32-make"
 
         with tools.chdir("tbb"):
             if self.settings.compiler == "Visual Studio":
                 vcvars = tools.vcvars_command(self.settings)
                 try:
-                    self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra),
-                             win_bash=use_win_bash)
+                    self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
                 except Exception:
                     raise Exception("This package needs 'make' in the path to build")
             elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
-                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra), win_bash=use_win_bash)
+                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
 
