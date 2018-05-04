@@ -25,7 +25,7 @@ that have future-proof scalability"""
                 self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
     def source(self):
-        tools.get("https://www.threadingbuildingblocks.org/sites/default/filessoftware_releases/"
+        tools.get("https://www.threadingbuildingblocks.org/sites/default/files/software_releases/"
                   "source/tbb44_20160413oss_src.tgz")
         shutil.move("tbb44_20160413oss", "tbb")
 
