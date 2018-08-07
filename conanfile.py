@@ -5,8 +5,8 @@ from conans import ConanFile, tools
 
 class TBBConan(ConanFile):
     name = "TBB"
-    version = "4.4.4"
-    license = "GPLv2 with the (libstdc++) runtime exception"
+    version = "2018_U5"
+    license = "Apache 2.0"
     homepage = "https://www.threadingbuildingblocks.org"
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
@@ -25,9 +25,8 @@ that have future-proof scalability"""
                 self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
     def source(self):
-        tools.get("https://www.threadingbuildingblocks.org/sites/default/files/software_releases/"
-                  "source/tbb44_20160413oss_src.tgz")
-        shutil.move("tbb44_20160413oss", "tbb")
+        tools.get("https://github.com/01org/tbb/archive/2018_U5.tar.gz")
+        shutil.move("tbb-2018_U5", "tbb")
 
     def build(self):
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
