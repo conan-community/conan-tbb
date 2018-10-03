@@ -32,6 +32,16 @@ that have future-proof scalability"""
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
+        if str(self.settings.compiler) in ['gcc', 'clang', 'apple-clang']:
+            if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
+                extra += " stdlib=libstdc++"
+            elif self.settings.compiler.libcxx == 'libc++':
+                extra += " stdlib=libc++"
+        if str(self.settings.compiler) in ['clang', 'apple-clang']:
+            extra += " compiler=clang"
+        elif self.settings.compiler == 'gcc':
+            extra += " compiler=gcc"
+
         make = tools.get_env("CONAN_MAKE_PROGRAM", "make")
 
         if tools.which("mingw32-make"):
