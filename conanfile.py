@@ -33,9 +33,9 @@ that have future-proof scalability"""
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
         if self.settings.compiler in ['gcc', 'clang', 'apple-clang']:
-            if self.settings.compiler.libcxx in ['libstdc++', 'libstdc++11']:
+            if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
                 extra += " stdlib=libstdc++"
-            elif self.settings.compiler.libcxx == 'libc++':
+            elif str(self.settings.compiler.libcxx) == 'libc++':
                 extra += " stdlib=libc++"
             extra += " compiler=gcc" if self.settings.compiler == 'gcc' else " compiler=clang"
 
