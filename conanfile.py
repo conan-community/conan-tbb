@@ -32,6 +32,13 @@ that have future-proof scalability"""
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
+        if self.settings.compiler in ['gcc', 'clang', 'apple-clang']:
+            if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
+                extra += " stdlib=libstdc++"
+            elif str(self.settings.compiler.libcxx) == 'libc++':
+                extra += " stdlib=libc++"
+            extra += " compiler=gcc" if self.settings.compiler == 'gcc' else " compiler=clang"
+
         make = tools.get_env("CONAN_MAKE_PROGRAM", "make")
 
         if tools.which("mingw32-make"):
@@ -44,8 +51,6 @@ that have future-proof scalability"""
                     self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
                 except Exception:
                     raise Exception("This package needs 'make' in the path to build")
-            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
-                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
 
