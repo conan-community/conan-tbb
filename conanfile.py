@@ -1,32 +1,38 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
-import shutil
 from conans import ConanFile, tools
+from conans.errors import ConanException
 
 
 class TBBConan(ConanFile):
     name = "TBB"
-    version = "2018_U5"
-    license = "Apache 2.0"
-    homepage = "https://www.threadingbuildingblocks.org"
+    version = "2019_U1"
+    license = "Apache-2.0"
+    url = "https://github.com/conan-community/conan-tbb"
+    homepage = "https://github.com/01org/tbb"
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
 that have future-proof scalability"""
-    url = "https://github.com/conan-community/conan-tbb"
+    author = "Conan Community"
+    topics = ("conan", "tbb", "threading", "parallelism", "tbbmalloc")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
-    # TBB by default is a special case, it strongly recommends SHARED
-    default_options = "shared=True"
+    default_options = {"shared": False}
+    _source_subfolder = "source_subfolder"
+
+    def config_options(self):
+        if self.settings.os == "Windows":
+            del self.options.shared
 
     def configure(self):
-        if not self.options.shared:
-            if self.settings.os == "Windows":
-                raise Exception("Intel-TBB does not support static linking in Windows")
-            else:
-                self.output.warn("Intel-TBB strongly discourages usage of static linkage")
+        if self.settings.os != "Windows" and self.options.shared:
+            self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
     def source(self):
-        tools.get("https://github.com/01org/tbb/archive/2018_U5.tar.gz")
-        shutil.move("tbb-2018_U5", "tbb")
+        tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version))
+        os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
     def build(self):
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
@@ -37,28 +43,28 @@ that have future-proof scalability"""
         if tools.which("mingw32-make"):
             make = "mingw32-make"
 
-        with tools.chdir("tbb"):
+        with tools.chdir(self._source_subfolder):
             if self.settings.compiler == "Visual Studio":
                 vcvars = tools.vcvars_command(self.settings)
                 try:
                     self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
                 except Exception:
-                    raise Exception("This package needs 'make' in the path to build")
+                    raise ConanException("This package needs 'make' in the path to build")
             elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
 
     def package(self):
-        self.copy("*COPYING", dst="licenses", keep_path=False)
-        self.copy("*.h", "include", "tbb/include")
-        self.copy("*", "include/tbb/compat", "tbb/include/tbb/compat")
-        build_folder = "tbb/build/"
+        self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="*.h", dst="include", src="%s/include" % self._source_subfolder)
+        self.copy(pattern="*", dst="include/tbb/compat", src="%s/include/tbb/compat" % self._source_subfolder)
+        build_folder = "%s/build/" % self._source_subfolder
         build_type = "debug" if self.settings.build_type == "Debug" else "release"
-        self.copy("*%s*.lib" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy("*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy("*%s*.dll" % build_type, dst="bin", src=build_folder, keep_path=False)
-        self.copy("*%s*.dylib" % build_type, dst="lib", src=build_folder, keep_path=False)
+        self.copy(pattern="*%s*.lib" % build_type, dst="lib", src=build_folder, keep_path=False)
+        self.copy(pattern="*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False)
+        self.copy(pattern="*%s*.dll" % build_type, dst="bin", src=build_folder, keep_path=False)
+        self.copy(pattern="*%s*.dylib" % build_type, dst="lib", src=build_folder, keep_path=False)
         # Copy also .dlls to lib folder so consumers can link against them directly when using MinGW
         if self.settings.os == "Windows" and self.settings.compiler == "gcc":
             self.copy("*%s*.dll" % build_type, dst="lib", src=build_folder, keep_path=False)
@@ -78,12 +84,12 @@ that have future-proof scalability"""
     def package_info(self):
         if self.settings.build_type == "Debug":
             self.cpp_info.libs.extend(["tbb_debug", "tbbmalloc_debug"])
-            if self.options.shared:
+            if self.settings.os != "Windows" and self.options.shared:
                 self.cpp_info.libs.extend(["tbbmalloc_proxy_debug"])
         else:
             self.cpp_info.libs.extend(["tbb", "tbbmalloc"])
-            if self.options.shared:
+            if self.settings.os != "Windows" and self.options.shared:
                 self.cpp_info.libs.extend(["tbbmalloc_proxy"])
 
-        if not self.options.shared and self.settings.os != "Windows":
+        if self.settings.os != "Windows" and not self.options.shared:
             self.cpp_info.libs.extend(["pthread"])
