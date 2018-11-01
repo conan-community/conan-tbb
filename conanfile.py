@@ -35,7 +35,7 @@ that have future-proof scalability"""
         os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
     def build(self):
-        extra = "" if self.options.shared else "extra_inc=big_iron.inc"
+        extra = "" if self.settings.os != "Windows" and self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
         make = tools.get_env("CONAN_MAKE_PROGRAM", "make")
