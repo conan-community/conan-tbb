@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from conans import ConanFile, CMake
 import os
 
@@ -11,14 +14,6 @@ class TBBTestConan(ConanFile):
         cmake.configure()
         cmake.build()
 
-    def imports(self):
-        self.copy("*.dll", "bin", "bin")
-        self.copy("*.so*", "bin", "lib")
-        self.copy("*.dylib", "bin", "lib")
-
     def test(self):
-        os.chdir("bin")
-        if self.settings.os != "Windows":
-            self.run("LD_LIBRARY_PATH=./ ./example")
-        else:
-            self.run(".%sexample" % os.sep)
+        bin_path = os.path.join("bin", "example")
+        self.run(bin_path, run_environment=True)
