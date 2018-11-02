@@ -3,7 +3,8 @@
 
 import os
 from conans import ConanFile, tools, MSBuild
-from conans.errors import ConanException
+from conan.model.version import Version
+from conans.errors import ConanInvalidConfiguration
 
 
 class TBBConan(ConanFile):
@@ -27,6 +28,8 @@ that have future-proof scalability"""
             del self.options.shared
 
     def configure(self):
+        if self.settings.compiler == "Macos" and Version(self.compiler.version.value) < "8.0":
+            raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
         if self.settings.os != "Windows" and self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
@@ -45,8 +48,9 @@ that have future-proof scalability"""
 
         with tools.chdir(self._source_subfolder):
             if self.settings.compiler == "Visual Studio":
+                msvc_arch = {'x86': 'x86', 'x86_64': 'x64', 'armv7': 'ARM', 'armv8': 'ARM64'}
                 msbuild = MSBuild(self)
-                msbuild.build(os.path.join("build", "vs2013", "makefile.sln"))
+                msbuild.build(os.path.join("build", "vs2013", "makefile.sln"), arch=msvc_arch[self.settings.arch])
             elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
