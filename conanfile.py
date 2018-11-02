@@ -29,7 +29,7 @@ that have future-proof scalability"""
 
     def configure(self):
         if self.settings.os == "Macos" and \
-           self.settings.compiler == "apple-clang" and \ 
+           self.settings.compiler == "apple-clang" and \
            Version(self.compiler.version.value) < "8.0":
             raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
         if self.settings.os != "Windows" and self.options.shared:
