@@ -24,27 +24,47 @@ that have future-proof scalability"""
             else:
                 self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
+    @property
+    def is_msvc(self):
+        return self.settings.compiler == 'Visual Studio'
+
+    @property
+    def is_mingw(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc'
+
+    @property
+    def is_clanglc(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'clang'
+
     def source(self):
         tools.get("https://github.com/01org/tbb/archive/2018_U5.tar.gz")
         shutil.move("tbb-2018_U5", "tbb")
 
     def build(self):
+        def add_flag(name, value):
+            if name in os.environ:
+                os.environ[name] += ' ' + value
+            else:
+                os.environ[name] = value
+
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
-        make = tools.get_env("CONAN_MAKE_PROGRAM", "make")
-
-        if tools.which("mingw32-make"):
-            make = "mingw32-make"
+        make = tools.get_env("CONAN_MAKE_PROGRAM", tools.which("make") or tools.which('mingw32-make'))
+        if not make:
+            raise Exception("This package needs 'make' in the path to build")
 
         with tools.chdir("tbb"):
-            if self.settings.compiler == "Visual Studio":
-                vcvars = tools.vcvars_command(self.settings)
-                try:
-                    self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
-                except Exception:
-                    raise Exception("This package needs 'make' in the path to build")
-            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
+            # intentionally not using AutoToolsBuildEnvironment for now - it's broken for clang-cl
+            if self.is_clanglc:
+                add_flag('CFLAGS', '-mrtm')
+                add_flag('CXXFLAGS', '-mrtm')
+
+            if self.is_msvc:
+                # intentionally not using vcvars for clang-cl yet
+                with tools.vcvars(self.settings):
+                    self.run("%s arch=%s %s" % (make, arch, extra))
+            elif self.is_mingw:
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
