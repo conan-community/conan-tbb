@@ -3,7 +3,7 @@
 
 import os
 from conans import ConanFile, tools, MSBuild
-from conan.model.version import Version
+from conans.model.version import Version
 from conans.errors import ConanInvalidConfiguration
 
 
