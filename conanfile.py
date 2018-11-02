@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from conans import ConanFile, tools
+from conans import ConanFile, tools, MSBuild
 from conans.errors import ConanException
 
 
@@ -45,11 +45,8 @@ that have future-proof scalability"""
 
         with tools.chdir(self._source_subfolder):
             if self.settings.compiler == "Visual Studio":
-                vcvars = tools.vcvars_command(self.settings)
-                try:
-                    self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
-                except Exception:
-                    raise ConanException("This package needs 'make' in the path to build")
+                msbuild = MSBuild(self)
+                msbuild.build(os.path.join("build", "vs2013", "makefile.sln"))
             elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
