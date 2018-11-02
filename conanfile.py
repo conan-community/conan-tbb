@@ -50,6 +50,13 @@ that have future-proof scalability"""
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
+        if self.settings.compiler in ['gcc', 'clang', 'apple-clang']:
+            if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
+                extra += " stdlib=libstdc++"
+            elif str(self.settings.compiler.libcxx) == 'libc++':
+                extra += " stdlib=libc++"
+            extra += " compiler=gcc" if self.settings.compiler == 'gcc' else " compiler=clang"
+
         make = tools.get_env("CONAN_MAKE_PROGRAM", tools.which("make") or tools.which('mingw32-make'))
         if not make:
             raise Exception("This package needs 'make' in the path to build")
