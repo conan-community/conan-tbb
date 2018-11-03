@@ -35,25 +35,54 @@ that have future-proof scalability"""
         if self.settings.os != "Windows" and self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
+    @property
+    def is_msvc(self):
+        return self.settings.compiler == 'Visual Studio'
+
+    @property
+    def is_mingw(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc'
+
+    @property
+    def is_clanglc(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'clang'
+
     def source(self):
         tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version))
         os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
     def build(self):
-        extra = "" if self.settings.os != "Windows" and self.options.shared else "extra_inc=big_iron.inc"
+        def add_flag(name, value):
+            if name in os.environ:
+                os.environ[name] += ' ' + value
+            else:
+                os.environ[name] = value
+
+        extra = "" if self.settings.os == "Windows" or self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
-        make = tools.get_env("CONAN_MAKE_PROGRAM", "make")
+        if self.settings.compiler in ['gcc', 'clang', 'apple-clang']:
+            if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
+                extra += " stdlib=libstdc++"
+            elif str(self.settings.compiler.libcxx) == 'libc++':
+                extra += " stdlib=libc++"
+            extra += " compiler=gcc" if self.settings.compiler == 'gcc' else " compiler=clang"
 
-        if tools.which("mingw32-make"):
-            make = "mingw32-make"
+        make = tools.get_env("CONAN_MAKE_PROGRAM", tools.which("make") or tools.which('mingw32-make'))
+        if not make:
+            raise Exception("This package needs 'make' in the path to build")
 
         with tools.chdir(self._source_subfolder):
-            if self.settings.compiler == "Visual Studio":
-                msvc_arch = {'x86': 'x86', 'x86_64': 'x64', 'armv7': 'ARM', 'armv8': 'ARM64'}
-                msbuild = MSBuild(self)
-                msbuild.build(os.path.join("build", "vs2013", "makefile.sln"), arch=msvc_arch[self.settings.arch])
-            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
+            # intentionally not using AutoToolsBuildEnvironment for now - it's broken for clang-cl
+            if self.is_clanglc:
+                add_flag('CFLAGS', '-mrtm')
+                add_flag('CXXFLAGS', '-mrtm')
+
+            if self.is_msvc:
+                # intentionally not using vcvars for clang-cl yet
+                with tools.vcvars(self.settings):
+                    self.run("%s arch=%s %s" % (make, arch, extra))
+            elif self.is_mingw:
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
                 self.run("%s arch=%s %s" % (make, arch, extra))
@@ -94,5 +123,5 @@ that have future-proof scalability"""
             if self.settings.os != "Windows" and self.options.shared:
                 self.cpp_info.libs.extend(["tbbmalloc_proxy"])
 
-        if self.settings.os != "Windows" and not self.options.shared:
-            self.cpp_info.libs.extend(["pthread"])
+        if self.settings.os == "Linux":
+            self.cpp_info.libs.append("pthread")
