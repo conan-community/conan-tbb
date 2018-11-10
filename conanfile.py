@@ -28,8 +28,6 @@ class TBBConan(ConanFile):
                 raise ConanInvalidConfiguration("Intel-TBB does not support static linking in Windows")
             else:
                 self.output.warn("Intel-TBB strongly discourages usage of static linkage")
-        if self.settings.compiler == "clang":
-            raise ConanInvalidConfiguration("Intel-TBB is not supported by clang")
 
     @property
     def is_msvc(self):
