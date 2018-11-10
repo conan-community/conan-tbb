@@ -4,7 +4,7 @@
 import os
 import shutil
 from conans import ConanFile, tools
-from conans.errors import ConanInvalidConfiguration, ConanException
+from conans.errors import ConanInvalidConfiguration
 
 
 class TBBConan(ConanFile):
