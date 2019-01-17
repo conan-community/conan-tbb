@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from conans import ConanFile, tools, MSBuild
+from conans import ConanFile, tools
 from conans.model.version import Version
 from conans.errors import ConanInvalidConfiguration
 
@@ -19,8 +19,8 @@ that have future-proof scalability"""
     author = "Conan Community"
     topics = ("conan", "tbb", "threading", "parallelism", "tbbmalloc")
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
-    default_options = {"shared": False}
+    options = {"shared": [True, False], "tbbmalloc": [True, False]}
+    default_options = {"shared": False, "tbbmalloc": True}
     _source_subfolder = "source_subfolder"
 
     def config_options(self):
@@ -58,6 +58,11 @@ that have future-proof scalability"""
             else:
                 os.environ[name] = value
 
+        targets = "tbb"
+        if self.options.tbbmalloc:
+            targets += " tbbmalloc"
+        if self.settings.os != "Windows" and self.options.shared:
+            targets += " tbbproxy"
         extra = "" if self.settings.os == "Windows" or self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
@@ -81,11 +86,11 @@ that have future-proof scalability"""
             if self.is_msvc:
                 # intentionally not using vcvars for clang-cl yet
                 with tools.vcvars(self.settings):
-                    self.run("%s arch=%s %s" % (make, arch, extra))
+                    self.run("%s arch=%s %s %s" % (make, arch, extra, targets))
             elif self.is_mingw:
-                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
+                self.run("%s arch=%s compiler=gcc %s %s" % (make, arch, extra, targets))
             else:
-                self.run("%s arch=%s %s" % (make, arch, extra))
+                self.run("%s arch=%s %s %s" % (make, arch, extra, targets))
 
     def package(self):
         self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
@@ -114,14 +119,11 @@ that have future-proof scalability"""
                              (fpath, fpath[0:fpath.rfind("." + extension) + len(extension) + 1]))
 
     def package_info(self):
-        if self.settings.build_type == "Debug":
-            self.cpp_info.libs.extend(["tbb_debug", "tbbmalloc_debug"])
-            if self.settings.os != "Windows" and self.options.shared:
-                self.cpp_info.libs.extend(["tbbmalloc_proxy_debug"])
-        else:
-            self.cpp_info.libs.extend(["tbb", "tbbmalloc"])
-            if self.settings.os != "Windows" and self.options.shared:
-                self.cpp_info.libs.extend(["tbbmalloc_proxy"])
-
+        lib_suffix = "_debug" if self.settings.build_type == "Debug" else ""
+        self.cpp_info.libs.append("tbb%s" % lib_suffix)
+        if self.options.tbbmalloc:
+            self.cpp_info.libs.append("tbbmalloc%s" % lib_suffix)
+        if self.settings.os != "Windows" and self.options.shared:
+            self.cpp_info.libs.append("tbbmalloc_proxy%s" % lib_suffix)
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("pthread")
