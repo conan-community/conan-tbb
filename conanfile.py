@@ -121,6 +121,6 @@ that have future-proof scalability"""
 
     def package_info(self):
         suffix = "_debug" if self.settings.build_type == "Debug" else ""
-        self.cpp_info.libs = ["{}{}".format(lib, suffix) for lib in self._targets]
+        self.cpp_info.libs = ["{}{}".format(lib.replace("proxy", "malloc_proxy"), suffix) for lib in self._targets]
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("pthread")
