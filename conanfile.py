@@ -22,6 +22,7 @@ that have future-proof scalability"""
     options = {"shared": [True, False], "tbbmalloc": [True, False]}
     default_options = {"shared": False, "tbbmalloc": True}
     _source_subfolder = "source_subfolder"
+    _targets = ["tbb"]
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -58,11 +59,11 @@ that have future-proof scalability"""
             else:
                 os.environ[name] = value
 
-        targets = "tbb"
         if self.options.tbbmalloc:
-            targets += " tbbmalloc"
-        if self.settings.os != "Windows" and self.options.shared:
-            targets += " tbbproxy"
+            self._targets.append("tbbmalloc")
+            if self.settings.os != "Windows" and self.options.shared:
+                self._targets.append("tbbproxy")
+
         extra = "" if self.settings.os == "Windows" or self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
 
@@ -86,11 +87,11 @@ that have future-proof scalability"""
             if self.is_msvc:
                 # intentionally not using vcvars for clang-cl yet
                 with tools.vcvars(self.settings):
-                    self.run("%s arch=%s %s %s" % (make, arch, extra, targets))
+                    self.run("%s arch=%s %s %s" % (make, arch, extra, " ".join(self._targets)))
             elif self.is_mingw:
-                self.run("%s arch=%s compiler=gcc %s %s" % (make, arch, extra, targets))
+                self.run("%s arch=%s compiler=gcc %s %s" % (make, arch, extra, " ".join(self._targets)))
             else:
-                self.run("%s arch=%s %s %s" % (make, arch, extra, targets))
+                self.run("%s arch=%s %s %s" % (make, arch, extra, " ".join(self._targets)))
 
     def package(self):
         self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
@@ -119,11 +120,7 @@ that have future-proof scalability"""
                              (fpath, fpath[0:fpath.rfind("." + extension) + len(extension) + 1]))
 
     def package_info(self):
-        lib_suffix = "_debug" if self.settings.build_type == "Debug" else ""
-        self.cpp_info.libs.append("tbb%s" % lib_suffix)
-        if self.options.tbbmalloc:
-            self.cpp_info.libs.append("tbbmalloc%s" % lib_suffix)
-        if self.settings.os != "Windows" and self.options.shared:
-            self.cpp_info.libs.append("tbbmalloc_proxy%s" % lib_suffix)
+        suffix = "_debug" if self.settings.build_type == "Debug" else ""
+        self.cpp_info.libs = ["{}{}".format(lib, suffix) for lib in self._targets]
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("pthread")
