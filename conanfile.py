@@ -20,7 +20,7 @@ that have future-proof scalability"""
     topics = ("conan", "tbb", "threading", "parallelism", "tbbmalloc")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "tbbmalloc": [True, False]}
-    default_options = {"shared": False, "tbbmalloc": True}
+    default_options = {"shared": False, "tbbmalloc": False}
     _source_subfolder = "source_subfolder"
     _targets = ["tbb"]
 
