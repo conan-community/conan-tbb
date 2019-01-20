@@ -19,8 +19,8 @@ that have future-proof scalability"""
     author = "Conan Community"
     topics = ("conan", "tbb", "threading", "parallelism", "tbbmalloc")
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "tbbmalloc": [True, False]}
-    default_options = {"shared": False, "tbbmalloc": False}
+    options = {"shared": [True, False], "tbbmalloc": [True, False], "tbbproxy": [True, False]}
+    default_options = {"shared": False, "tbbmalloc": False, "tbbproxy": False}
     _source_subfolder = "source_subfolder"
     _targets = ["tbb"]
 
@@ -35,6 +35,11 @@ that have future-proof scalability"""
             raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
         if self.settings.os != "Windows" and self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
+        if self.settings.os == "Windows" or \
+           not self.options.shared or \
+           not self.options.tbbmalloc and \
+           self.options.tbbproxy:
+            raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared")
 
     @property
     def is_msvc(self):
@@ -61,7 +66,7 @@ that have future-proof scalability"""
 
         if self.options.tbbmalloc:
             self._targets.append("tbbmalloc")
-            if self.settings.os != "Windows" and self.options.shared:
+            if self.settings.os != "Windows" and self.options.shared and self.options.tbbproxy:
                 self._targets.append("tbbproxy")
 
         extra = "" if self.settings.os == "Windows" or self.options.shared else "extra_inc=big_iron.inc"
@@ -121,6 +126,7 @@ that have future-proof scalability"""
 
     def package_info(self):
         suffix = "_debug" if self.settings.build_type == "Debug" else ""
-        self.cpp_info.libs = ["{}{}".format(lib.replace("proxy", "malloc_proxy"), suffix) for lib in self._targets]
+        libs = {"tbb": "tbb", "tbbproxy": "tbbmalloc_proxy", "tbbmalloc": "tbbmalloc"}
+        self.cpp_info.libs = ["{}{}".format(libs[target], suffix) for target in self._targets]
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("pthread")
