@@ -35,9 +35,9 @@ that have future-proof scalability"""
             raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
         if self.settings.os != "Windows" and self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
-        if not self.options.shared or \
-           not self.options.tbbmalloc and \
-           self.options.tbbproxy:
+        if self.options.tbbproxy and \
+           (not self.options.shared or \
+            not self.options.tbbmalloc):
             raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared options")
 
     @property
