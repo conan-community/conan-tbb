@@ -35,11 +35,10 @@ that have future-proof scalability"""
             raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
         if self.settings.os != "Windows" and self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
-        if self.settings.os == "Windows" or \
-           not self.options.shared or \
+        if not self.options.shared or \
            not self.options.tbbmalloc and \
            self.options.tbbproxy:
-            raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared")
+            raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared options")
 
     @property
     def is_msvc(self):
@@ -66,8 +65,8 @@ that have future-proof scalability"""
 
         if self.options.tbbmalloc:
             self._targets.append("tbbmalloc")
-            if self.settings.os != "Windows" and self.options.shared and self.options.tbbproxy:
-                self._targets.append("tbbproxy")
+        if self.options.tbbproxy:
+            self._targets.append("tbbproxy")
 
         extra = "" if self.settings.os == "Windows" or self.options.shared else "extra_inc=big_iron.inc"
         arch = "ia32" if self.settings.arch == "x86" else "intel64"
