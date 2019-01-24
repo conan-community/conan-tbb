@@ -53,7 +53,8 @@ that have future-proof scalability"""
         return self.settings.os == 'Windows' and self.settings.compiler == 'clang'
 
     def source(self):
-        tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version))
+        sha256 = "d3e5fbca3cc643d03bf332d576ff85e19aa774b483f148f95cd7d09958372109"
+        tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version), sha256=sha256)
         os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
     def build(self):
@@ -101,12 +102,12 @@ that have future-proof scalability"""
         self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
         self.copy(pattern="*.h", dst="include", src="%s/include" % self._source_subfolder)
         self.copy(pattern="*", dst="include/tbb/compat", src="%s/include/tbb/compat" % self._source_subfolder)
-        build_folder = "%s/build/" % self._source_subfolder
+        build_subfolder = "%s/build/" % self._source_subfolder
         build_type = "debug" if self.settings.build_type == "Debug" else "release"
-        self.copy(pattern="*%s*.lib" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy(pattern="*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy(pattern="*%s*.dll" % build_type, dst="bin", src=build_folder, keep_path=False)
-        self.copy(pattern="*%s*.dylib" % build_type, dst="lib", src=build_folder, keep_path=False)
+        self.copy(pattern="*%s*.lib" % build_type, dst="lib", src=build_subfolder, keep_path=False)
+        self.copy(pattern="*%s*.a" % build_type, dst="lib", src=build_subfolder, keep_path=False)
+        self.copy(pattern="*%s*.dll" % build_type, dst="bin", src=build_subfolder, keep_path=False)
+        self.copy(pattern="*%s*.dylib" % build_type, dst="lib", src=build_subfolder, keep_path=False)
         # Copy also .dlls to lib folder so consumers can link against them directly when using MinGW
         if self.settings.os == "Windows" and self.settings.compiler == "gcc":
             self.copy("*%s*.dll" % build_type, dst="lib", src=build_subfolder, keep_path=False)
