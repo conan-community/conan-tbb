@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import platform
-import copy
 from cpt.packager import ConanMultiPackager
 
 
