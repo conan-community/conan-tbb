@@ -7,6 +7,6 @@ conan_basic_setup()
 
 message("LIBS: ${CONAN_LIBS}")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ADD_EXECUTABLE(example main.cpp)
 TARGET_LINK_LIBRARIES(example ${CONAN_LIBS})
+SET_PROPERTY(TARGET example PROPERTY CXX_STANDARD 11)
