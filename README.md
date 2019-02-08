@@ -1,5 +1,5 @@
 [![Download](https://api.bintray.com/packages/conan-community/conan/TBB%3Aconan/images/download.svg) ](https://bintray.com/conan-community/conan/TBB%3Aconan/_latestVersion)
-[![Build Status Travis](https://travis-ci.org/conan-community/conan-TBB.svg)](https://travis-ci.org/conan-community/conan-TBB)
+[![Build Status Travis](https://travis-ci.org/conan-community/conan-tbb.svg)](https://travis-ci.org/conan-community/conan-tbb)
 [![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/conan-community/conan-TBB?svg=true)](https://ci.appveyor.com/project/ConanCIintegration/conan-TBB)
 
 ## Conan package recipe for [*TBB*](https://github.com/01org/tbb)
