@@ -2,6 +2,7 @@
 
 from conans import ConanFile, tools
 from conans.errors import ConanInvalidConfiguration
+from conans.errors import ConanInvalidConfiguration
 import os
 import shutil
 import tempfile
@@ -11,6 +12,8 @@ class TBBConan(ConanFile):
     name = "TBB"
     version = "4.4.4"
     license = "GPLv2 with the (libstdc++) runtime exception"
+    author = "bincrafters <bincrafters@gmail.com>"
+    topics = "conan", "intel", "threading", "blocks", "performance", 
     homepage = "https://www.threadingbuildingblocks.org"
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
@@ -63,7 +66,7 @@ that have future-proof scalability"""
                 try:
                     self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
                 except Exception:
-                    raise Exception("This package needs 'make' in the path to build")
+                    raise ConanInvalidConfiguration("This package needs 'make' in the path to build")
             elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
