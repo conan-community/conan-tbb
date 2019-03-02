@@ -13,7 +13,7 @@ class TBBConan(ConanFile):
     version = "4.4.4"
     license = "GPLv2 with the (libstdc++) runtime exception"
     author = "bincrafters <bincrafters@gmail.com>"
-    topics = "conan", "intel", "threading", "blocks", "performance", 
+    topics = "conan", "intel", "threading", "blocks", "performance",
     homepage = "https://www.threadingbuildingblocks.org"
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
