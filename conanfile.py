@@ -20,7 +20,9 @@ programs that take full advantage of multicore performance, that are portable an
 that have future-proof scalability"""
     url = "https://github.com/conan-community/conan-tbb"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
+    options = {
+        "shared": [True, False],
+    }
     # TBB by default is a special case, it strongly recommends SHARED
     default_options = {
         "shared": True,
@@ -70,7 +72,7 @@ that have future-proof scalability"""
             elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
                 self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
-                self.run("%s arch=%s %s" % (make, arch, extra))
+                self.run("%s arch=%s compiler=%s %s" % (make, arch, str(self.settings.compiler), extra))
 
     def package(self):
         self.copy("*COPYING", dst="licenses", keep_path=False)
