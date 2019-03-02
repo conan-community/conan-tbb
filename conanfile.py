@@ -9,7 +9,7 @@ from conans.errors import ConanInvalidConfiguration
 
 class TBBConan(ConanFile):
     name = "TBB"
-    version = "2019_U3"
+    version = "2019_U4"
     license = "Apache-2.0"
     url = "https://github.com/conan-community/conan-tbb"
     homepage = "https://github.com/01org/tbb"
