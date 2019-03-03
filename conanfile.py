@@ -1,33 +1,57 @@
+# -*- coding: utf-8 -*-
+
+from conans import ConanFile, tools
+from conans.errors import ConanInvalidConfiguration
+from conans.errors import ConanInvalidConfiguration
 import os
 import shutil
-from conans import ConanFile, tools
+import tempfile
 
 
 class TBBConan(ConanFile):
     name = "TBB"
     version = "4.4.4"
     license = "GPLv2 with the (libstdc++) runtime exception"
+    author = "bincrafters <bincrafters@gmail.com>"
+    topics = "conan", "intel", "threading", "blocks", "performance",
     homepage = "https://www.threadingbuildingblocks.org"
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
 that have future-proof scalability"""
     url = "https://github.com/conan-community/conan-tbb"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
+    options = {
+        "shared": [True, False],
+    }
     # TBB by default is a special case, it strongly recommends SHARED
-    default_options = "shared=True"
+    default_options = {
+        "shared": True,
+    }
+    _source_subfolder = "sources"
 
     def configure(self):
         if not self.options.shared:
             if self.settings.os == "Windows":
-                raise Exception("Intel-TBB does not support static linking in Windows")
+                raise ConanInvalidConfiguration("Intel-TBB does not support static linking in Windows")
             else:
                 self.output.warn("Intel-TBB strongly discourages usage of static linkage")
 
     def source(self):
-        tools.get("https://www.threadingbuildingblocks.org/sites/default/files/software_releases/"
-                  "source/tbb44_20160413oss_src.tgz")
-        shutil.move("tbb44_20160413oss", "tbb")
+        filename = "tbb44_20160413oss_src.tar.gz"
+        url = "https://www.threadingbuildingblocks.org/sites/default/files/software_releases/" \
+              "source/tbb44_20160413oss_src.tgz"
+        sha256 = "3fecffef5e42f9f22e51a81a1bfa89ea40cefb439d168c285c9d5f0128353644"
+
+        dlfilepath = os.path.join(tempfile.gettempdir(), filename)
+        if os.path.exists(dlfilepath) and not tools.get_env("TBB_FORCE_DOWNLOAD", False):
+            self.output.info("Skipping download. Using cached {}".format(dlfilepath))
+        else:
+            self.output.info("Downloading {} from {}".format(self.name, url))
+            tools.download(url, dlfilepath)
+        tools.check_sha256(dlfilepath, sha256)
+        tools.untargz(dlfilepath)
+        extracted_dir = "tbb44_20160413oss".format(self.name, self.version)
+        os.rename(extracted_dir, self._source_subfolder)
 
     def build(self):
         extra = "" if self.options.shared else "extra_inc=big_iron.inc"
@@ -38,23 +62,24 @@ that have future-proof scalability"""
         if tools.which("mingw32-make"):
             make = "mingw32-make"
 
-        with tools.chdir("tbb"):
+        with tools.chdir(self._source_subfolder):
+            compiler = ""
+            if self.settings.compiler in ["clang", "apple-clang", "gcc"]:
+                compiler = "compiler=gcc" if self.settings.compiler == "gcc" else "compiler=clang"
             if self.settings.compiler == "Visual Studio":
                 vcvars = tools.vcvars_command(self.settings)
                 try:
                     self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
                 except Exception:
-                    raise Exception("This package needs 'make' in the path to build")
-            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
-                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
+                    raise ConanInvalidConfiguration("This package needs 'make' in the path to build")
             else:
-                self.run("%s arch=%s %s" % (make, arch, extra))
+                self.run("%s arch=%s %s %s" % (make, arch, compiler, extra))
 
     def package(self):
         self.copy("*COPYING", dst="licenses", keep_path=False)
-        self.copy("*.h", "include", "tbb/include")
-        self.copy("*", "include/tbb/compat", "tbb/include/tbb/compat")
-        build_folder = "tbb/build/"
+        self.copy("*.h", "include", os.path.join(self._source_subfolder, "include"))
+        self.copy("*", "include/tbb/compat", os.path.join(self._source_subfolder, "include", "tbb", "compat"))
+        build_folder = os.path.join(self._source_subfolder, "build")
         build_type = "debug" if self.settings.build_type == "Debug" else "release"
         self.copy("*%s*.lib" % build_type, dst="lib", src=build_folder, keep_path=False)
         self.copy("*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False)
