@@ -63,16 +63,17 @@ that have future-proof scalability"""
             make = "mingw32-make"
 
         with tools.chdir(self._source_subfolder):
+            compiler = ""
+            if self.settings.compiler in ["clang", "apple-clang", "gcc"]:
+                compiler = "compiler=gcc" if self.settings.compiler == "gcc" else "compiler=clang"
             if self.settings.compiler == "Visual Studio":
                 vcvars = tools.vcvars_command(self.settings)
                 try:
                     self.run("%s && %s arch=%s %s" % (vcvars, make, arch, extra))
                 except Exception:
                     raise ConanInvalidConfiguration("This package needs 'make' in the path to build")
-            elif self.settings.os == "Windows" and self.settings.compiler == "gcc":  # MinGW
-                self.run("%s arch=%s compiler=gcc %s" % (make, arch, extra))
             else:
-                self.run("%s arch=%s compiler=%s %s" % (make, arch, str(self.settings.compiler), extra))
+                self.run("%s arch=%s %s %s" % (make, arch, compiler, extra))
 
     def package(self):
         self.copy("*COPYING", dst="licenses", keep_path=False)
