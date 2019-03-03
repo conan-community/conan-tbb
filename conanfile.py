@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from conans.errors import ConanInvalidConfiguration
 import os
 from conans import ConanFile, tools
 from conans.model.version import Version
@@ -9,7 +10,7 @@ from conans.errors import ConanInvalidConfiguration
 
 class TBBConan(ConanFile):
     name = "TBB"
-    version = "2019_U3"
+    version = "2019_U4"
     license = "Apache-2.0"
     url = "https://github.com/conan-community/conan-tbb"
     homepage = "https://github.com/01org/tbb"
@@ -53,7 +54,8 @@ that have future-proof scalability"""
         return self.settings.os == 'Windows' and self.settings.compiler == 'clang'
 
     def source(self):
-        tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version))
+        sha256 = "342a0a2cd583879850658284b86e9351ea019b4f3fcd731f4c18456f0ce9f900"
+        tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version), sha256=sha256)
         os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
     def build(self):
@@ -80,7 +82,7 @@ that have future-proof scalability"""
 
         make = tools.get_env("CONAN_MAKE_PROGRAM", tools.which("make") or tools.which('mingw32-make'))
         if not make:
-            raise Exception("This package needs 'make' in the path to build")
+            raise ConanInvalidConfiguration("This package needs 'make' in the path to build")
 
         with tools.chdir(self._source_subfolder):
             # intentionally not using AutoToolsBuildEnvironment for now - it's broken for clang-cl
