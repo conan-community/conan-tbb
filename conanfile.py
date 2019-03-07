@@ -27,7 +27,7 @@ that have future-proof scalability"""
 
     def config_options(self):
         if self.settings.os == "Windows":
-            del self.options.shared
+            self.options.shared = True
 
     def configure(self):
         if self.settings.os == "Macos" and \
