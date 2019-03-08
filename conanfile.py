@@ -27,7 +27,7 @@ that have future-proof scalability"""
 
     def config_options(self):
         if self.settings.os == "Windows":
-            self.options.shared = True
+            del self.options.shared
 
     def configure(self):
         if self.settings.os == "Macos" and \
@@ -36,9 +36,12 @@ that have future-proof scalability"""
             raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
         if self.settings.os != "Windows" and self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
-        if self.options.tbbproxy and \
+        if self.settings.os != "Windows" and self.options.tbbproxy and \
            (not self.options.shared or \
             not self.options.tbbmalloc):
+            raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared options")
+        if self.settings.os == "Windows" and self.options.tbbproxy and \
+           not self.options.tbbmalloc:
             raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared options")
 
     @property
