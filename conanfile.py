@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from conans.errors import ConanInvalidConfiguration
@@ -58,6 +57,11 @@ that have future-proof scalability"""
         tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version), sha256=sha256)
         os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
+        # Get the version of the current compiler instead of gcc
+        linux_include = os.path.join(self._source_subfolder, "build", "linux.inc")
+        tools.replace_in_file(linux_include, "shell gcc", "shell $(CC)")
+        tools.replace_in_file(linux_include, "= gcc", "= $(CC)")
+
     def build(self):
         def add_flag(name, value):
             if name in os.environ:
@@ -80,6 +84,7 @@ that have future-proof scalability"""
                 extra += " stdlib=libc++"
             extra += " compiler=gcc" if self.settings.compiler == 'gcc' else " compiler=clang"
 
+            extra += " gcc_version={}".format(str(self.settings.compiler.version))
         make = tools.get_env("CONAN_MAKE_PROGRAM", tools.which("make") or tools.which('mingw32-make'))
         if not make:
             raise ConanInvalidConfiguration("This package needs 'make' in the path to build")
