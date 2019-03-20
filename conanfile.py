@@ -24,10 +24,6 @@ that have future-proof scalability"""
     _source_subfolder = "source_subfolder"
     _targets = ["tbb"]
 
-    def config_options(self):
-        if self.settings.os == "Windows":
-            del self.options.shared
-
     def configure(self):
         if self.settings.os == "Macos" and \
            self.settings.compiler == "apple-clang" and \
@@ -42,6 +38,8 @@ that have future-proof scalability"""
         if self.settings.os == "Windows" and self.options.tbbproxy and \
            not self.options.tbbmalloc:
             raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared options")
+        if self.settings.os == "Windows" and not self.options.shared:
+            raise ConanInvalidConfiguration("TBB could not be built as static lib on Windows")
 
     @property
     def is_msvc(self):
