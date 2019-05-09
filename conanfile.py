@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from conans.errors import ConanInvalidConfiguration
 import os
 from conans import ConanFile, tools
 from conans.model.version import Version
