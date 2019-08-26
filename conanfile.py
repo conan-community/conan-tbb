@@ -77,8 +77,12 @@ that have future-proof scalability"""
                 os.environ[name] = value
 
         extra = "" if self.settings.os == "Windows" or self.options.shared else "extra_inc=big_iron.inc"
-        arch = "ia32" if self.settings.arch == "x86" else "intel64"
-
+        if self.settings.arch == "x86":
+            arch = "ia32" 
+        elif self.settings.arch == "x86_64":
+            arch = "intel64"
+        elif self.settings.arch == "armv7":
+            arch = "armv7"
         if self.settings.compiler in ['gcc', 'clang', 'apple-clang']:
             if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
                 extra += " stdlib=libstdc++"
