@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/conan/conan-TBB.svg?branch=stable%2F2019_U9)](https://travis-ci.org/conan/conan-TBB)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/conan/conan-TBB?branch=stable%2F2019_U9&svg=true)](https://ci.appveyor.com/project/conan/conan-TBB)
 
-[Conan.io](https://conan.io) package recipe for [*TBB*](https://github.com/01org/tbb).
+[Conan.io](https://conan.io) package recipe for [*TBB*](https://github.com/intel/tbb).
 
 Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
