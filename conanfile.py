@@ -8,10 +8,10 @@ from conans.errors import ConanInvalidConfiguration
 
 class TBBConan(ConanFile):
     name = "TBB"
-    version = "2019_U4"
+    version = "2019_U9"
     license = "Apache-2.0"
     url = "https://github.com/conan-community/conan-tbb"
-    homepage = "https://github.com/01org/tbb"
+    homepage = "https://github.com/intel/tbb"
     description = """Intel Threading Building Blocks (Intel TBB) lets you easily write parallel C++
 programs that take full advantage of multicore performance, that are portable and composable, and
 that have future-proof scalability"""
@@ -52,7 +52,7 @@ that have future-proof scalability"""
         return self.settings.os == 'Windows' and self.settings.compiler == 'clang'
 
     def source(self):
-        sha256 = "342a0a2cd583879850658284b86e9351ea019b4f3fcd731f4c18456f0ce9f900"
+        sha256 = "15652f5328cf00c576f065e5cd3eaf3317422fe82afb67a9bcec0dc065bd2abe"
         tools.get("{}/archive/{}.tar.gz".format(self.homepage, self.version), sha256=sha256)
         os.rename("{}-{}".format(self.name.lower(), self.version), self._source_subfolder)
 
@@ -83,6 +83,8 @@ that have future-proof scalability"""
             arch = "intel64"
         elif self.settings.arch == "armv7":
             arch = "armv7"
+        elif self.settings.arch == "armv8":
+            arch = "aarch64"
         if self.settings.compiler in ['gcc', 'clang', 'apple-clang']:
             if str(self.settings.compiler.libcxx) in ['libstdc++', 'libstdc++11']:
                 extra += " stdlib=libstdc++"
