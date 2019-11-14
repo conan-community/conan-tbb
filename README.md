@@ -1,3 +1,5 @@
+**[OBSOLETE]** The recipe is now in https://github.com/conan-io/conan-center-index
+
 [![Download](https://api.bintray.com/packages/conan/public-conan/TBB%3Aconan/images/download.svg) ](https://bintray.com/conan/public-conan/TBB%3Aconan/_latestVersion)
 [![Build Status](https://travis-ci.org/conan/conan-TBB.svg?branch=stable%2F2019_U9)](https://travis-ci.org/conan/conan-TBB)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/conan/conan-TBB?branch=stable%2F2019_U9&svg=true)](https://ci.appveyor.com/project/conan/conan-TBB)
